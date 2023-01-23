@@ -113,13 +113,12 @@ function enviarMsg(){
 function recuperarMensagens(){
     const mensagens = document.querySelector('section');
     
-    mensagens.innerHTML = ``;
-
     const reqMensagens = axios.get('https://mock-api.driven.com.br/api/v6/uol/messages');
-
+    
     reqMensagens.then(mostrarmsgs);
 
     function mostrarmsgs (resposta) {
+        mensagens.innerHTML = ``;
         mensagensGeral = resposta.data
         for(let i = 0; i < mensagensGeral.length; i++){
 
