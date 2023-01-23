@@ -136,7 +136,7 @@ function recuperarMensagens(){
             <span class="time">(${mensagensGeral[i].time})</span> <span class="user">${mensagensGeral[i].from}</span> para <span class="towho">${mensagensGeral[i].to}:</span> <span class="msg">${mensagensGeral[i].text}</span>
             </div>`;
             } else if (mensagensGeral[i].type === "private-message" && (mensagensGeral[i].from === `${nomeSemConverter}` || mensagensGeral[i].to === `${nomeSemConverter}`)){
-                mensagens.innerHTML += `<div class="pvt-message" data-test="message">
+                mensagens.innerHTML += `<div class="private-message" data-test="message">
             <span class="time">(${mensagensGeral[i].time})</span> <span class="user">${mensagensGeral[i].from}</span> reservadamente para <span class="towho">${mensagensGeral[i].to}:</span> <span class="msg">${mensagensGeral[i].text}</span>
             </div>`;
             }
