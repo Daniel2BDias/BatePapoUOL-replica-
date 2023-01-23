@@ -76,6 +76,7 @@ function enviaEnter (enter){
     }
 }
 function enviarMsg(){
+    const input = document.querySelector('#inputMsg');
     const msgContent = document.querySelector('#inputMsg').value;
 
     let toWho = 'Todos';
@@ -100,8 +101,12 @@ function enviarMsg(){
 
     const requisitionMsg = axios.post('https://mock-api.driven.com.br/api/v6/uol/messages', msgFormatada);
 
-    requisitionMsg.then(recuperarMensagens());
-
+    requisitionMsg.then(recuperarMensagens(), inputReset());
+    
+    function inputReset(){
+    input.value = "";
+    }
+    
     requisitionMsg.catch(nFoi);
 
     function nFoi(resposta){
