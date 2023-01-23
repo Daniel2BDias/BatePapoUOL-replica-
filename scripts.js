@@ -6,7 +6,7 @@ let nomeUsuario;
 let nomeSemConverter;
 let mensagensGeral = [];
 let keepLogin;
-let atualizaChat = setInterval(recuperarMensagens(), 3000);
+let atualizaChat;
 let lastMessage;
 
 inputLogin.addEventListener('keyup', loginEnter);
@@ -53,6 +53,7 @@ function login() {
         console.log(resposta.data);
         loginPage.classList.add('hidden');
         keepLogin = setInterval(verificaLogin, 5000);
+        atualizaChat = setInterval(recuperarMensagens(), 3000);
         recuperarMensagens();
     }
 
@@ -122,14 +123,25 @@ function recuperarMensagens(){
     function mostrarmsgs (resposta) {
         mensagensGeral = resposta.data
         for(let i = 0; i < mensagensGeral.length; i++){
-            mensagens.innerHTML = mensagens.innerHTML + `<div class="mensagens" data-test="message">
+
+            if (mensagensGeral[i].type === "status"){
+            mensagens.innerHTML += `<div class="status" data-test="message">
             <span class="time">(${mensagensGeral[i].time})</span> <span class="user">${mensagensGeral[i].from}</span> para <span class="towho">${mensagensGeral[i].to}</span>: <span class="msg">${mensagensGeral[i].text}</span>
             </div>`;
+            } else if (mensagensGeral[i].type === 'message'){
+                mensagens.innerHTML += `<div class="message" data-test="message">
+            <span class="time">(${mensagensGeral[i].time})</span> <span class="user">${mensagensGeral[i].from}</span> para <span class="towho">${mensagensGeral[i].to}</span>: <span class="msg">${mensagensGeral[i].text}</span>
+            </div>`;
+            } else if (mensagensGeral[i].type === "private-message" && mensagensGeral[i].from === `${nomeUsuario}` || mensagensGeral[i].to === `${nomeUsuario}`){
+                mensagens.innerHTML += `<div class="pvt-message" data-test="message">
+            <span class="time">(${mensagensGeral[i].time})</span> <span class="user">${mensagensGeral[i].from}</span> reservadamente para <span class="towho">${mensagensGeral[i].to}</span>: <span class="msg">${mensagensGeral[i].text}</span>
+            </div>`;
+            }
+            
+            
         }
-        lastMessageElement = Array.from(document.querySelectorAll('section'));
-        lastMessage = lastMessageElement.pop();
-
-        lastMessage.scrollIntoView();
+        const queroVerEsse = document.querySelector('section div');
+            queroVerEsse.scrollIntoView();
     }
 
     reqMensagens.catch(nDeu);
@@ -158,8 +170,4 @@ function logoff() {
     clearInterval(keepLogin);
     clearInterval(atualizaChat);
     window.location.reload();
-}
-
-function mostrarMenu(){
-    return;
 }
