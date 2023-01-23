@@ -1,137 +1,165 @@
-const board = document.querySelector('.jogo');
+//variáveis globais
 
-const parrots = [
-    'parrot1',
-    'parrot2',
-    'parrot3',
-    'parrot4',
-    'parrot5',
-    'parrot6',
-    'parrot7'
-];
+let inputLogin = document.querySelector('#inputLogin');
+let inputMsg = document.querySelector('#inputMsg');
+let nomeUsuario;
+let nomeSemConverter;
+let mensagensGeral = [];
+let keepLogin;
+let atualizaChat = setInterval(recuperarMensagens(), 3000);
+let lastMessage;
 
-const jogadas = document.getElementById("jogadas");
+inputLogin.addEventListener('keyup', loginEnter);
+inputMsg.addEventListener('keyup', enviaEnter);
 
-let qtdCartas = prompt("quantas cartas? 4-14, somente pares");
+//funções gerais
 
-while (qtdCartas < 4 || qtdCartas > 14 || qtdCartas % 2 !== 0){
-    prompt("quantas cartas? 4-14, somente pares");
-    qtdCartas = prompt("quantas cartas? 4-14, somente pares");
+function loginEnter(enter) {
+    enter = enter.which || enter.keyCode;
+    if (enter === 13){
+        
+        login();
+    }
 }
 
-const timer = document.getElementById("timer");
-let timerCounter = 0;
-let interval = setInterval(contador, 1000);
+function login() {
+ 
+ const loginPage = document.querySelector('.login');
+ const errorMsg = document.querySelector('#errorlogin'); 
+ const loading = document.querySelector('.loading');
+ const cover = document.querySelector('.cover');
 
-function contador(){
-  timerCounter++;
-  timer.innerHTML = timerCounter;
-}
+  nomeUsuario = document.querySelector('#inputLogin').value;
 
-
- const divided = qtdCartas/2;
-
- const slicedParrots = parrots.slice(0, divided);
-
- const slicedParrotsClone = [...slicedParrots];
-
- const parrotsFusion = slicedParrots.concat(slicedParrotsClone);
-
- const shuffled = parrotsFusion.sort(() => Math.random() - 0.5);
-
-for(let i = 0; i < qtdCartas; i++){
-
-   board.innerHTML += `<div data-test="card" data-parrot="${shuffled[i]}" class="carta" onClick="viraCarta(this)">
-    <div class="front-face face">
-      <img data-test="face-down-image" src="Gifs/front.png">
-    </div>
-    <div class="back-face face">
-      <img data-test="face-up-image" src="Gifs/${shuffled[i]}.gif">
-    </div>
-    </div>`;
-    }
-
-    let primeira = "";
-    let segunda = "";
-
-    function verificaCarta(){
-
-      const verPrimeira = primeira.getAttribute('data-parrot');
-      const verSegunda = segunda.getAttribute('data-parrot');
-
-      console.log(verPrimeira, verSegunda)
-      if(verPrimeira === verSegunda){
-
-        setTimeout(() => {
-
-          primeira.classList.add('acertou');
-         segunda.classList.add('acertou');
-        
-         primeira = "";
-        segunda = "";
-
-        }, 500);
-
-      
-      } else {
-
-        setTimeout(() => {
-        
-        primeira.classList.remove('vira-carta');
-        segunda.classList.remove('vira-carta');
-        
-        primeira = "";
-        segunda = "";
-        
-      }, 1000);
-      
-      }
-
-    }
-    function viraCarta(clicada){
-
-      if(clicada.classList.contains('vira-carta')){
-        return;
-      }
-
-      clicada.classList.add('vira-carta');
-
-      if(primeira === ""){
-      primeira = clicada;
-      } else if (segunda === ""){
-        segunda = clicada;
-      }
-
-      const jogadasHtml = jogadas.innerHTML;
-
-      const numerico = +jogadasHtml
-
-      jogadas.innerHTML = numerico+1;
-
-      verificaCarta();
-      fimDoJogo();
-    }
-      let fim = +qtdCartas;
+  const converteObjeto = { name: `${nomeUsuario}` };
+  
     
-    function fimDoJogo(){
-      
+    if(nomeUsuario === null || nomeUsuario === undefined || nomeUsuario === "" || nomeUsuario.length < 3){
+        errorMsg.innerHTML = '**Nome de Usuário Inválido**';
+        return;
+    }
+    
+    nomeSemConverter = nomeUsuario;
+    nomeUsuario = converteObjeto;
 
-      setTimeout(() => {if (document.querySelectorAll('.vira-carta').length === fim){ 
 
-        clearInterval(interval);
+    const cadastroUsuario = axios.post('https://mock-api.driven.com.br/api/v6/uol/participants', nomeUsuario);
 
-       alert(`Você ganhou em ${jogadas.innerHTML} jogadas! A duração do jogo foi de ${timer.innerHTML} segundos!`);
-
-    let reinicio = prompt("deseja recomeçar? sim ou não");
-
-    while(reinicio !== "sim" && reinicio !== "não"){
-      prompt("Deseja recomeçar?");
-      reinicio = prompt("Deseja recomeçar? sim ou não");
+    loading.classList.remove('hidden');
+    cover.classList.add('hidden');
+    
+    cadastroUsuario.then(sucesso);
+    function sucesso(resposta){
+        console.log(resposta.data);
+        loginPage.classList.add('hidden');
+        keepLogin = setInterval(verificaLogin, 5000);
+        recuperarMensagens();
     }
 
-    if(reinicio === "sim"){
-      location.reload();
+    
+
+    cadastroUsuario.catch(fracasso);
+    function fracasso(erro){
+        console.log(erro);
+        errorMsg.innerHTML = '**Nome de Usuário em Uso**'
+        loading.classList.add('hidden');
+        cover.classList.remove('hidden');
     }
-  }
-}, 1000);
+
+}
+
+function enviaEnter (enter){
+    enter = enter.which || enter.keyCode;
+    if (enter === 13){
+        
+        enviarMsg();
+    }
+}
+function enviarMsg(){
+    const msgContent = document.querySelector('#inputMsg').value;
+
+    let toWho = 'Todos';
+    let msgtype;
+    if(toWho == 'Todos'){
+        msgtype = "message";
+    } else {
+        msgtype = "private-message";
+    }
+
+    let msgFormatada = {};
+
+    msgFormatada.from = `${nomeSemConverter}`;
+    msgFormatada.to = `${toWho}`;
+    msgFormatada.text = `${msgContent}`;
+    msgFormatada.type = `${msgtype}`;
+
+
+    if(msgContent === undefined || msgContent === null){
+        return;
+    }
+
+    const requisitionMsg = axios.post('https://mock-api.driven.com.br/api/v6/uol/messages', msgFormatada);
+
+    requisitionMsg.then(recuperarMensagens());
+
+    requisitionMsg.catch(nFoi);
+
+    function nFoi(resposta){
+        console.log(resposta.data);
+        console.log(msgFormatada);
+    };
+}
+
+function recuperarMensagens(){
+    const mensagens = document.querySelector('section');
+    
+    mensagens.innerHTML = ``;
+
+    const reqMensagens = axios.get('https://mock-api.driven.com.br/api/v6/uol/messages');
+
+    reqMensagens.then(mostrarmsgs);
+
+    function mostrarmsgs (resposta) {
+        mensagensGeral = resposta.data
+        for(let i = 0; i < mensagensGeral.length; i++){
+            mensagens.innerHTML = mensagens.innerHTML + `<div class="mensagens" data-test="message">
+            <span class="time">(${mensagensGeral[i].time})</span> <span class="user">${mensagensGeral[i].from}</span> para <span class="towho">${mensagensGeral[i].to}</span>: <span class="msg">${mensagensGeral[i].text}</span>
+            </div>`;
+        }
+        lastMessageElement = Array.from(document.querySelectorAll('section'));
+        lastMessage = lastMessageElement.pop();
+
+        lastMessage.scrollIntoView();
+    }
+
+    reqMensagens.catch(nDeu);
+
+    function nDeu(resposta){
+        console.log("Unable to recover messages from server", "Error" + resposta.status);
+        recuperarMensagens();
+    }
+}
+
+function verificaLogin() {
+    const aindaLogado = axios.post('https://mock-api.driven.com.br/api/v6/uol/status', nomeUsuario);
+    aindaLogado.then();
+    aindaLogado.catch(logoff);
+}
+
+function sucesso(resposta){
+    alert(resposta.data);
+}
+
+function fracasso(erro){
+    alert(`${erro}`);
+}
+
+function logoff() {
+    clearInterval(keepLogin);
+    clearInterval(atualizaChat);
+    window.location.reload();
+}
+
+function mostrarMenu(){
+    return;
 }
