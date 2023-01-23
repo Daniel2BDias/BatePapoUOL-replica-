@@ -9,22 +9,43 @@
         <title>Bate-papo UOL</title>
     </head>
     <body>
+        <div class="login">
+            <img src="./images/logo.png">
+            <div>
+            <input type="text" id="inputLogin" name="nomeUsuario" placeholder="Digite o nome de usuário">
+            <div id="errorlogin"></div>
+            <button onclick="login()">Entrar</button>
+            </div>
+        </div>
         <div class="main">
         <header>
             <img src="./images/logo.png">
             <ion-icon name="people"></ion-icon>
         </header>
-        <aside class="hidden">
+        <aside class="lateral hidden">
+            <div class="users">
 
+            </div>
+            <div class="discretion">
+                <div class="public">
+                    <ion-icon name="lock-open"></ion-icon>
+                    Público
+                </div>
+                <div class="restricted">
+                    <ion-icon name="lock-closed"></ion-icon>
+                    Privado
+                </div>
+            </div>
         </aside>
         <section>
             
         </section>
         <footer>
-            <input placeholder="Escreva aqui...">
-            <ion-icon name="paper-plane-outline"></ion-icon>
+            <input type="text" id="inputMsg" name="Mensagem" placeholder="Escreva aqui...">
+            <ion-icon onclick="enviarMsg()" name="paper-plane-outline"></ion-icon>
         </footer>
         </div>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
         <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
         <script src="./scripts.js"></script>
