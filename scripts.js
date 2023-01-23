@@ -34,7 +34,7 @@ function login() {
   const converteObjeto = { name: `${nomeUsuario}` };
   
     
-    if(nomeUsuario === null || nomeUsuario === undefined || nomeUsuario === "" || nomeUsuario.length < 3){
+    if(nomeUsuario === null || nomeUsuario === undefined || nomeUsuario === "" || nomeUsuario.length < 3 || nomeUsuario === 'Todos'){
         errorMsg.innerHTML = '**Nome de Usuário Inválido**';
         return;
     }
@@ -81,7 +81,7 @@ function enviarMsg(){
 
     let toWho = 'Todos';
     let msgtype;
-    if(toWho == 'Todos'){
+    if(toWho === 'Todos'){
         msgtype = "message";
     } else {
         msgtype = "private-message";
