@@ -142,10 +142,16 @@ section {
 }
 
 section div {
+    display: flex;
+    align-items: center;
+    justify-content: last baseline;
     width: 100%;
-    height: fit-content;
+    height: 30px;
     margin: 10px 0;
     font-size: 14px;
+}
+section div span {
+    margin: 0 5px;
 }
 
 .hidden {
