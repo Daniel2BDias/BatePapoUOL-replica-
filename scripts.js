@@ -52,9 +52,8 @@ function login() {
     function sucesso(resposta){
         console.log(resposta.data);
         loginPage.classList.add('hidden');
-        keepLogin = setInterval(verificaLogin, 5000);
-        atualizaChat = setInterval(recuperarMensagens(), 3000);
         recuperarMensagens();
+        loops();
     }
 
     
@@ -137,11 +136,9 @@ function recuperarMensagens(){
             <span class="time">(${mensagensGeral[i].time})</span> <span class="user">${mensagensGeral[i].from}</span> reservadamente para <span class="towho">${mensagensGeral[i].to}</span>: <span class="msg">${mensagensGeral[i].text}</span>
             </div>`;
             }
-            
-            
+             
         }
-        const queroVerEsse = document.querySelector('section div');
-            queroVerEsse.scrollIntoView();
+        mensagens.lastChild.scrollIntoView();
     }
 
     reqMensagens.catch(nDeu);
@@ -170,4 +167,8 @@ function logoff() {
     clearInterval(keepLogin);
     clearInterval(atualizaChat);
     window.location.reload();
+}
+function loops (){
+    keepLogin = setInterval(verificaLogin, 5000);
+    atualizaChat = setInterval(recuperarMensagens, 3000);
 }
